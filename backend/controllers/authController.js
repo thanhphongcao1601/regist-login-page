@@ -48,7 +48,7 @@ const authController = {
         return res.status(404).json("Wrong username");
       }
 
-      const validPassword = bcrypt.compare(req.body.password, user.password);
+      const validPassword = await bcrypt.compare(req.body.password, user.password);
 
       if (!validPassword) {
         return res.status(404).json("Wrong password");
@@ -70,7 +70,7 @@ const authController = {
 
         const { password, ...other } = user._doc;
 
-        return res.status(200).json({ other, accessToken });
+        return res.status(200).json({"userInfo": other, "accessToken": accessToken });
       }
     } catch (error) {
       return res.status(500).json(error);
@@ -110,7 +110,7 @@ const authController = {
   },
   userLogout: async (req,res)=>{
     res.clearCookie("refreshToken");
-    refreshTokens = refreshTokens.filter(token => token !== req/cookies.refreshToken);
+    refreshTokens = refreshTokens.filter(token => token !== req.cookies.refreshToken);
     return res.status(200).json("Logged out")
   }
 };
