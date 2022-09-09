@@ -1,56 +1,30 @@
-import axios from "axios";
-import { useRouter } from "next/router";
+import axios, { AxiosRequestHeaders, AxiosResponse } from "axios";
+import { User } from "../models/UserInput";
+import { UserInfo, LoginResponse } from "../models/LoginResponse";
+import useStore from "./store";
 
-interface User {
-    username: string;
-    password: string;
-    email?: string;
-}
-export async function loginUser(user: User) {
-  try {
-    const { data, status } = await axios.post(
-      "http://localhost:8000/v1/auth/login",
-      user,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }
-    );
+const instance = axios.create({
+  baseURL: "http://localhost:8000/v1",
+  timeout: 15000,
+});
+const responseBody = (response: AxiosResponse) => response.data;
 
-    console.log(JSON.stringify(data, null, 4));
+const userRequests = {
+  get: (url: string, header?: AxiosRequestHeaders) =>
+    instance.get<User>(url, { headers: header }).then(responseBody),
+  post: (url: string, body?: User, header?: AxiosRequestHeaders) =>
+    instance.post<User>(url, body, { headers: header }).then(responseBody),
+  delete: (url: string) => instance.delete<User>(url).then(responseBody),
+};
 
-    return {data, status};
-  } catch (error) {
-    console.log(error)
-    return error
-  }
-}
-
-export async function registUser(user: User) {
-    try {
-      const { data, status } = await axios.post(
-        "http://localhost:8000/v1/auth/register",
-        user,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
-  
-      console.log(JSON.stringify(data, null, 4));
-      return data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.log("error message: ", error.message);
-        // 👇️ error: AxiosError<any, any>
-        return error.message;
-      } else {
-        console.log("unexpected error: ", error);
-        return "An unexpected error occurred";
-      }
-    }
-  }
+export const Users = {
+  getAllUsers: (header?: AxiosRequestHeaders): Promise<UserInfo[]> =>
+    userRequests.get("/user", header),
+  loginUser: (User: User): Promise<LoginResponse> =>
+    userRequests.post("/auth/login", User),
+  refreshToken: (): Promise<string> => userRequests.post("/auth/refresh"),
+  registUser: (User: User): Promise<UserInfo> =>
+    userRequests.post("/auth/register", User),
+  logOut: (header: AxiosRequestHeaders) =>
+    userRequests.post("/auth/logout", {} as User, header),
+};

@@ -9,7 +9,7 @@ const authController = {
     return jwt.sign(
       { id: user.id, admin: user.isAdmin },
       process.env.JWT_ACCESS_KEY,
-      { expiresIn: "20s" }
+      { expiresIn: "30s" }
     );
   },
   createRefreshToken: (user) => {
@@ -78,7 +78,6 @@ const authController = {
   },
   requestRefreshToken: async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
-    console.log(refreshTokens);
 
     if (!refreshToken) {
       return res.status(401).json("You are not authenticated");
@@ -108,9 +107,9 @@ const authController = {
       return res.status(200).json({ accessToken: newAccessToken });
     });
   },
-  userLogout: async (req,res)=>{
-    res.clearCookie("refreshToken");
+  logOut: async (req,res)=>{
     refreshTokens = refreshTokens.filter(token => token !== req.cookies.refreshToken);
+    res.clearCookie("refreshToken");
     return res.status(200).json("Logged out")
   }
 };

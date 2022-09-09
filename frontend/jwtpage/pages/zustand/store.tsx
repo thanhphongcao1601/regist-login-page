@@ -1,21 +1,26 @@
-import { userAgent } from "next/server";
 import create from "zustand";
-
-interface User {
-  username: string;
-  password: string;
-}
+import { LoginResponse, UserInfo } from "../models/LoginResponse";
 
 type Store = {
-  currentUser: Object;
-  setCurrentUser: (user: Object) => void;
+  currentUser: UserInfo;
+  accessToken: string;
+  setAccessToken: (token:string) => void;
+  setCurrentUser: (user: UserInfo) => void;
 };
 
 const useStore = create<Store>((set) => ({
-  currentUser: { username: "", password: ""},
-  setCurrentUser: (user:Object) => set(()=>({
-    currentUser: user
-  }))
+  currentUser: {} as UserInfo,
+  accessToken: "",
+  setAccessToken: (token) =>
+    set((state) => ({
+      ...state,
+      accessToken: token
+    })),
+  setCurrentUser: (user) =>
+    set((state) => ({
+      ...state,
+      currentUser: user
+    })),
 }));
 
-//export default useStore;
+export default useStore;

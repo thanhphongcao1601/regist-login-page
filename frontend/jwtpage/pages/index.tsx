@@ -14,24 +14,34 @@ import React, { useState } from "react";
 import { BsSunFill } from "react-icons/bs";
 import { BsMoonFill } from "react-icons/bs";
 import NextLink from "next/link";
-import { loginUser } from "./zustand/apiRequest";
 import { useRouter } from "next/router";
+import useStore from "./zustand/store";
+import { Users } from "./zustand/apiRequest";
+import { LoginResponse } from "./models/LoginResponse";
 
 const Index = () => {
+  const store = useStore();
   const { toggleColorMode } = useColorMode();
   const formBackgroud = useColorModeValue("gray.100", "gray.900");
   const [toggle, setToggle] = useState(false);
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
   const router = useRouter();
 
-  async function handleLogin() {
-    const login = await loginUser({ username: username, password: password });
-    if (login) {
-      router.push("home");
-    }
+  function handleLogin() {
+    Users.loginUser({
+      username: username,
+      password: password,
+    })
+      .then((data) => {
+        const loginResponse = JSON.parse(JSON.stringify(data)) as LoginResponse;
+        store.setCurrentUser(loginResponse.userInfo);
+        store.setAccessToken(loginResponse.accessToken);
+        router.push("/home");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   return (
