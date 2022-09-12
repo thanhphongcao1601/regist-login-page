@@ -7,13 +7,10 @@ const authRoute = require("./routes/auth");
 const userRoute = require("./routes/user");
 
 dotenv.config();
-mongoose.connect("mongodb://localhost:27017/AuthPage", () => {
-  console.log("CONNECTED TO MONGODB");
-});
 
 const app = express();
 
-app.use(cors());
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use(cookieParser());
 app.use(express.json());
 
@@ -21,6 +18,10 @@ app.use(express.json());
 app.use("/v1/auth", authRoute);
 app.use("/v1/user", userRoute);
 
-app.listen(8000, () => {
-  console.log("Server is running");
+mongoose.connect(process.env.MONGODB_URI, (err) => {
+  if (err) throw err;
+  console.log("CONNECTED TO MONGODB");
+  app.listen(8000, () => {
+    console.log("Server is running");
+  });
 });

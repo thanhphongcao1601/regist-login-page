@@ -7,7 +7,7 @@ import {
   Td,
   TableContainer,
 } from "@chakra-ui/react";
-import { Badge, Box, Button, Flex, Spacer, Text } from "@chakra-ui/react";
+import { Badge, Box, Button, Flex, Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { UserInfo } from "./models/LoginResponse";
@@ -20,6 +20,7 @@ const Home = () => {
   const [listUser, setListUser] = useState([] as UserInfo[]);
 
   function handleGetAllUser() {
+    setListUser((listUser) => []);
     Users.getAllUsers({ token: store.accessToken })
       .then((data) => {
         console.log(data as Object);
@@ -43,8 +44,8 @@ const Home = () => {
   function refreshToken() {
     Users.refreshToken()
       .then((token) => {
-        console.log(token);
-        store.setAccessToken(token);
+        const accessTokenValue = JSON.parse(JSON.stringify(token)).accessToken;
+        store.setAccessToken(accessTokenValue);
       })
       .catch((err) => {
         console.log(err);
@@ -75,9 +76,9 @@ const Home = () => {
         justifyContent={"center"}
         alignItems="center"
       >
-        <Text fontSize="4xl">Welcome to JWT web</Text>
+        <Text fontSize="4xl">Access Token expires in 30s</Text>
         <Flex mb={"50px"} justifyContent={"center"}>
-          <Button onClick={handleGetAllUser}>Load all user</Button>
+          <Button colorScheme={"teal"} onClick={handleGetAllUser}>Load all user</Button>
           <Box w={"10px"}></Box>
           <Button onClick={refreshToken}>Refresh Token</Button>
           <Box w={"10px"}></Box>

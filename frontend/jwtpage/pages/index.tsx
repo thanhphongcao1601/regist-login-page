@@ -37,7 +37,7 @@ const Index = () => {
         const loginResponse = JSON.parse(JSON.stringify(data)) as LoginResponse;
         store.setCurrentUser(loginResponse.userInfo);
         store.setAccessToken(loginResponse.accessToken);
-        router.push("/home");
+        router.replace("/home");
       })
       .catch((err) => {
         console.log(err);

@@ -14,7 +14,7 @@ import React, { useState } from "react";
 import { BsSunFill } from "react-icons/bs";
 import { BsMoonFill } from "react-icons/bs";
 import NextLink from 'next/link'
-import { registUser } from "./zustand/apiRequest";
+import { Users } from "./zustand/apiRequest";
 
 const Register = () => {
   const { toggleColorMode } = useColorMode();
@@ -60,7 +60,7 @@ const Register = () => {
           variant="solid"
           mb="3"
           mt={"3"}
-          onClick={()=>registUser({username: username, email: email, password: password})}
+          onClick={()=>Users.registUser({username: username, email: email, password: password})}
         >
           Regist
         </Button>

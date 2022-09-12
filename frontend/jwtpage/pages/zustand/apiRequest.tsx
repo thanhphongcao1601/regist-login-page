@@ -1,7 +1,6 @@
 import axios, { AxiosRequestHeaders, AxiosResponse } from "axios";
 import { User } from "../models/UserInput";
 import { UserInfo, LoginResponse } from "../models/LoginResponse";
-import useStore from "./store";
 
 const instance = axios.create({
   baseURL: "http://localhost:8000/v1",
@@ -13,7 +12,7 @@ const userRequests = {
   get: (url: string, header?: AxiosRequestHeaders) =>
     instance.get<User>(url, { headers: header }).then(responseBody),
   post: (url: string, body?: User, header?: AxiosRequestHeaders) =>
-    instance.post<User>(url, body, { headers: header }).then(responseBody),
+    instance.post<User>(url, body, { headers: header, withCredentials: true }).then(responseBody),
   delete: (url: string) => instance.delete<User>(url).then(responseBody),
 };
 
